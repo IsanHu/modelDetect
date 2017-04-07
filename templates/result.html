@@ -1,0 +1,29 @@
+<div class="row onePadding">
+    <div class="col-md-12 col-sm-12">
+        <div class="table-responsive">
+            <table class="table table-condensed">
+                <tr>
+                    <td>图片</td>
+                    <td style="width:100px">真人</td>
+                    <td style="width:100px">暴漫</td>
+                    <td style="width:100px">萌宠</td>
+                    <td style="width:100px">美食</td>
+                    <td style="width:100px">动漫</td>
+                    <td style="width:100px">风景</td>
+                </tr>
+                {% for result in results %}
+                    <tr>
+                        <td><img class="previewImg" style="width: 150px; height: 150px;" src={{result["url"]}}></td>
+                        <td>{{result['realman']}}</td>
+                        <td>{{result['baoman']}}</td>
+                        <td>{{result['pet']}}</td>
+                        <td>{{result['food']}}</td>
+                        <td>{{result['dongman']}}</td>
+                        <td>{{result['view']}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
