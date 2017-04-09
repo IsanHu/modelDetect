@@ -19,17 +19,62 @@
 
 </div>
 
+<div id="loading" style="">
+  <p style="text-align: center;">拼命加载中...</p>
+</div>
+
 <script type="text/javascript">
+  var p = 1
+  var key = ""
+  var loading = 0
+  $("#loading").hide();
+  
+  window.onscroll = function(){
+
+    if (loading == 0) {
+      if($(document).height() < $(window).height() + $(window).scrollTop()) {
+        if (p < 20) {
+          p = p + 1;
+          loadingMore()
+        }else{
+
+        };
+      }
+    }
+  }
+
+  function loadingMore() {
+     key = $("#searchInput").val().trim();
+      if (key.length == 0) {
+        return;
+      }
+      $("#loading").show();
+      loading = 1
+      searchWithKey(key, p)
+  }
+    
+
   function search() {
-      var key = $("#searchInput").val().trim();
+      key = $("#searchInput").val().trim();
       if (key.length == 0) {
         alert("请输入搜索词");
         return;
       }
-      waitingDialog.show('处理中...');
-      searchWords(key, function(data){
-        waitingDialog.hide();
-        $('#result').html(data);
+      loading = 1
+      p = 1
+      searchWithKey(key, p)
+  }
+  
+
+  function searchWithKey(key, page) {
+      if (p == 1) {
+        waitingDialog.show('处理中...');
+      }
+      searchWords(key, page, function(data){
+        if (p == 1) {
+          waitingDialog.hide();
+        }
+        $('#result').append(data)
     });
   }
 
@@ -43,26 +88,36 @@
       search();
   });
 
-  function searchWords(searchKey, callback) {
+  function searchWords(searchKey, page, callback) {
         var params = {
         
         };
-        url = "/search/" + searchKey;
+        // url = "/search/" + searchKey + "/page/" + page;
+        url = "/search/" + searchKey + "/page/" + p.toString()
+        console.log(url)
         $.ajax({
             type: "GET",
             data: params,
             url: url,
             success: function(data) {
+                loading = 0
+                $("#loading").hide();
                 console.log("成功");
                 callback(data);
             },
             error: function(data) {
+                $("#loading").hide();
+                loading = 0
                 waitingDialog.hide();
                 $('#searchWordBody').html(data.responseText);
             },
             dataType: "html"
         });
     }
+</script>
+
+<script type="text/javascript">
+  
 </script>
 
 

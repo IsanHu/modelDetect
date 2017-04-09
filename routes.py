@@ -24,13 +24,13 @@ label_lines = [line.rstrip() for line
 
 def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
-    app.add_url_rule('/search/<string:key>', 'search', search, methods=['GET'])
+    app.add_url_rule('/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
 
 def home():
     return render_template('home.html')
     pass
 
-def search(key):
+def search(key, page):
     apiUrl = "http://open-api.biaoqingmm.com/open-api/gifs/search"
 
     params = {}
@@ -39,8 +39,9 @@ def search(key):
     params['size'] = 5
     params['timestamp'] = str(int(1000 * time.time()))
     params['q'] = key
+    params['p'] = page
 
-    paramsString = apiUrl + "app_id=" + params['app_id'] + "&q=" + params['q'] + "&size=" + str(params['size']) + "&timestamp=" + params['timestamp']
+    paramsString = apiUrl + "app_id=" + params['app_id'] + "&p=" + params['p'] + "&q=" + params['q'] + "&size=" + str(params['size']) + "&timestamp=" + params['timestamp']
     print paramsString
     sig = hashlib.md5(paramsString).hexdigest().upper()
     params['signature'] = sig
