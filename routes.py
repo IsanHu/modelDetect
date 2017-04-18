@@ -14,11 +14,15 @@ from StringIO import StringIO
 import tensorflow as tf
 from PIL import Image, ImageSequence
 from io import BytesIO
+import ConfigParser
+
+# Load the configuration
+config=ConfigParser.SafeConfigParser()
 
 # Loads label file, strips off carriage return
 # 加载标签数据
 label_lines = [line.rstrip() for line 
-                   in tf.gfile.GFile("/home/3isan333/Code/imageRetrain/retrained_labels.txt")]
+                   in tf.gfile.GFile(config.get('paths','label_path'))]
 
     
 
@@ -58,7 +62,7 @@ def search(key, page):
 
     # Unpersists graph from file
     # 从文件中读取重新训练好的模型
-    with tf.gfile.FastGFile("/home/3isan333/Code/imageRetrain/retrained_graph.pb", 'rb') as f:
+    with tf.gfile.FastGFile(config.get('paths','label_path'), 'rb') as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
         _ = tf.import_graph_def(graph_def, name='')
