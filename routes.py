@@ -68,7 +68,7 @@ def search(key, page):
         print (gif["main"])
 
     results = []
-    datas = {}
+    datas = []
     downloadStart = time.time()
     for url in imageUrls:
         da = {}
