@@ -14,17 +14,23 @@ from StringIO import StringIO
 import tensorflow as tf
 from PIL import Image, ImageSequence
 from io import BytesIO
-import ConfigParser
 
-# Load the configuration
-config=ConfigParser.SafeConfigParser()
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Loads label file, strips off carriage return
 # 加载标签数据
 label_lines = [line.rstrip() for line 
-                   in tf.gfile.GFile(config.get('paths','label_path'))]
+                   in tf.gfile.GFile(basedir + '/retrained_labels.txt')]
 
-    
+# Unpersists graph from file
+with tf.gfile.FastGFile(basedir + '/retrained_graph.pb', 'rb') as f:
+    print("加载模型")
+    graph_def = tf.GraphDef()
+    graph_def.ParseFromString(f.read())
+    _ = tf.import_graph_def(graph_def, name='')
+
+sess = tf.Session()
+softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
 def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
@@ -35,6 +41,7 @@ def home():
     pass
 
 def search(key, page):
+    overStart = time.time()
     apiUrl = "http://open-api.biaoqingmm.com/open-api/gifs/search"
 
     params = {}
@@ -51,6 +58,7 @@ def search(key, page):
     params['signature'] = sig
     print params
     response = requests.get(apiUrl, params)
+    print("搜索接口耗时：%.3fs" % (time.time() - overStart))
     print response
     gifs = json.load(StringIO(response.content))['gifs']
 
@@ -59,39 +67,29 @@ def search(key, page):
         imageUrls.append(gif["main"])
         print (gif["main"])
 
-
-    # Unpersists graph from file
-    # 从文件中读取重新训练好的模型
-    with tf.gfile.FastGFile(config.get('paths','label_path'), 'rb') as f:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(f.read())
-        _ = tf.import_graph_def(graph_def, name='')
-
     results = []
-    with tf.Session() as sess:
-        for url in imageUrls:
-            re = {}
-            image_data = read_image2RGBbytes(url)
-            if image_data is None:
-                continue
-            re['url'] = url
-            
-            # Feed the image_data as input to the graph and get first prediction
-            softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
-            
-            predictions = sess.run(softmax_tensor, \
-                     {'DecodeJpeg/contents:0': image_data})
-            
-            # Sort to show labels of first prediction in order of confidence
-            top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
-            predict = {}
-            for node_id in top_k:
-                human_string = label_lines[node_id]
-                score = predictions[0][node_id]
-                re[human_string] = '%.5f' % score
-            print re
-            results.append(re)
+    for url in imageUrls:
+        re = {}
+        image_data = read_image2RGBbytes(url)
+        if image_data is None:
+            continue
+        re['url'] = url
+        
+        predictions = sess.run(softmax_tensor, \
+                 {'DecodeJpeg/contents:0': image_data})
+        
+        # Sort to show labels of first prediction in order of confidence
+        top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        predict = {}
+        for node_id in top_k:
+            human_string = label_lines[node_id]
+            score = predictions[0][node_id]
+            re[human_string] = '%.5f' % score
+        print re
+        results.append(re)
 
+    overEnd = time.time()
+    print("总共用时：%.3fs" % (overEnd - overStart))
     return render_template('result.html', results=results)
 
 def read_image2RGBbytes(imgurl):
