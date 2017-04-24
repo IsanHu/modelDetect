@@ -79,7 +79,7 @@ def search(key, page):
         da['url'] = url
         datas.append(da)
 
-    print("下载用时：%.3fs", %(time.time() - downloadStart))
+    print("下载用时：%.3fs" % (time.time() - downloadStart))
 
     predictStart = time.time()
     for (url, image_data) in datas:
