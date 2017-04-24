@@ -47,7 +47,7 @@ def search(key, page):
     params = {}
     params['app_id'] = "b05b585673334bc081493f069510d6ad"
     print int(1000 * time.time())
-    params['size'] = 5
+    params['size'] = 20
     params['timestamp'] = str(int(1000 * time.time()))
     params['q'] = key
     params['p'] = page
