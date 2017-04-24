@@ -68,13 +68,23 @@ def search(key, page):
         print (gif["main"])
 
     results = []
+    datas = {}
+    downloadStart = time.time()
     for url in imageUrls:
-        re = {}
+        da = {}
         image_data = read_image2RGBbytes(url)
         if image_data is None:
             continue
+        da['data'] = image_data
+        da['url'] = url
+        datas.append(da)
+
+    print("下载用时：%.3fs", %(time.time() - downloadStart))
+
+    predictStart = time.time()
+    for (url, image_data) in datas:
+        re = {}
         re['url'] = url
-        
         predictions = sess.run(softmax_tensor, \
                  {'DecodeJpeg/contents:0': image_data})
         
@@ -87,6 +97,7 @@ def search(key, page):
             re[human_string] = '%.5f' % score
         print re
         results.append(re)
+    print("预测用时：%.3fs" % (time.time() - predictStart))
 
     overEnd = time.time()
     print("总共用时：%.3fs" % (overEnd - overStart))
