@@ -82,11 +82,11 @@ def search(key, page):
     print("下载用时：%.3fs" % (time.time() - downloadStart))
 
     predictStart = time.time()
-    for (url, image_data) in datas:
+    for da in datas:
         re = {}
-        re['url'] = url
+        re['url'] = da['url']
         predictions = sess.run(softmax_tensor, \
-                 {'DecodeJpeg/contents:0': image_data})
+                 {'DecodeJpeg/contents:0': da['data']})
         
         # Sort to show labels of first prediction in order of confidence
         top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
