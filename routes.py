@@ -34,11 +34,38 @@ softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
 def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
+    app.add_url_rule('/classify/<path:url>', 'classify', classify, methods=['GET'])
     app.add_url_rule('/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
 
 def home():
     return render_template('home.html')
     pass
+
+def classify(url):
+    failReason = ""
+    result = {}
+    try:
+        image_data = read_image2RGBbytes(url)
+    except:
+        result['result'] = 0
+        result['errorMsg'] = "下载图片失败"
+        return  jsonify(result)
+    try:
+        predictions = sess.run(softmax_tensor, \
+                     {'DecodeJpeg/contents:0': image_data})
+        top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        predict = {}
+        for node_id in top_k:
+            human_string = label_lines[node_id]
+            score = predictions[0][node_id]
+            predict[human_string] = '%.5f' % score
+        result['result'] = 1
+        result['predict'] = predict
+        return  jsonify(result)
+    except:
+        result['result'] = 0
+        result['errorMsg'] = "预测失败"
+        return  jsonify(result)
 
 def search(key, page):
     overStart = time.time()
