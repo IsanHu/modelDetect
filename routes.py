@@ -178,10 +178,11 @@ def search(key, page):
     return render_template('result.html', results=results)
 
 def read_image2RGBbytes(imgurl):
+    print "read"
+    print imgurl
     try:
         with BytesIO() as output:
             response = requests.get(imgurl)
-            print imgurl
             with Image.open(StringIO(response.content)) as img:
                   frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
                   frameCount = len(frames)
@@ -192,8 +193,9 @@ def read_image2RGBbytes(imgurl):
                       temImg = frames[frameCount - 4]
                       temImg.convert('RGB').save(output, 'JPEG')
                   image_data = output.getvalue()
-    except:
+    except (Exception) as e:
         print ("读取图片失败")
+        print e.message
         return None
 
     return image_data
