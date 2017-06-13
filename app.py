@@ -20,7 +20,7 @@ sys.setdefaultencoding('utf8')
 app = Flask(__name__)
 init_route(app)
 
-@app.route('classify/upload', methods=['POST'])
+@app.route('/classify/upload', methods=['POST'])
 def upload():
     files = request.files
     return processUpload(files)
