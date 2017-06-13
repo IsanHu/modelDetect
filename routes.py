@@ -47,8 +47,9 @@ def classify(url):
     failReason = ""
     result = {}
     print url
+    print str(url)
     try:
-        image_data = read_image2RGBbytes(url)
+        image_data = read_image2RGBbytes(str(url))
     except:
         result['result'] = 0
         result['errorMsg'] = "下载图片失败"
