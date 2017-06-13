@@ -9,6 +9,7 @@ import sys
 import requests
 from StringIO import StringIO
 import datetime
+from sys import argv
 
 reload(sys)
 print sys.getdefaultencoding()
@@ -20,8 +21,6 @@ init_route(app)
 
 
 if __name__ == "__main__":
-    # app.run(host='0.0.0.0')
-    app.run(host='0.0.0.0', port=5555)
-    # app.run(host='0.0.0.0', debug=True, port=5555)
+    app.run(host='0.0.0.0', port=argv[1])
 
 
