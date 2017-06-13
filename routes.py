@@ -36,6 +36,7 @@ def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
     app.add_url_rule('/classify/<path:url>', 'classify', classify, methods=['GET'])
     app.add_url_rule('/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
+    app.add_url_rule('/upload', 'upload', upload(request), methods=['POST'])
     app.add_url_rule('/detectupload', 'detectupload', detectupload, methods=['GET'])
 
 def home():
@@ -71,6 +72,44 @@ def classify(url):
 
 def detectupload():
     return render_template('detect_upload.html')
+
+
+def upload(request):
+    images = []
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    updir = os.path.join(basedir, 'static/upload/')
+    files = request.files
+
+    index = 0
+    results = []
+    for f in files:
+        file = files[f]
+        filename = secure_filename(file.filename)
+        filePath = os.path.join(updir, filename)
+        file.save(filePath)
+        print "file path:"
+        print filePath
+
+        try:
+            image_data = read_image2RGBbytesFrom(filePath)
+        except:
+            print "读取图片失败"
+
+        filePath = 'static/upload/'+filename
+        try:
+            predictions = sess.run(softmax_tensor, \
+                         {'DecodeJpeg/contents:0': image_data})
+            top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+            re = {}
+            for node_id in top_k:
+                human_string = label_lines[node_id]
+                score = predictions[0][node_id]
+                re[human_string] = '%.5f' % score
+            re['url'] = filePath
+            results.append(re)
+        except:
+            print "预测失败"
+    return render_template('result.html', results=results)
 
 
 def search(key, page):
