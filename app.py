@@ -29,7 +29,10 @@ def upload():
 @app.route('/classify', methods=['POST'])
 def classify():
     url = request.url
-    return classifycategory(url)
+    print url
+    print request.form
+    print request.form['url']
+    return classifycategory(request.form['url'])
 
 
 if __name__ == "__main__":
