@@ -14,6 +14,7 @@ from StringIO import StringIO
 import tensorflow as tf
 from PIL import Image, ImageSequence
 from io import BytesIO
+from werkzeug import secure_filename
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,7 +37,6 @@ def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
     app.add_url_rule('/classify/<path:url>', 'classify', classify, methods=['GET'])
     app.add_url_rule('/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
-    app.add_url_rule('/upload', 'upload', upload(request), methods=['POST'])
     app.add_url_rule('/detectupload', 'detectupload', detectupload, methods=['GET'])
 
 def home():
@@ -74,11 +74,10 @@ def detectupload():
     return render_template('detect_upload.html')
 
 
-def upload(request):
+def processUpload(files):
     images = []
     basedir = os.path.abspath(os.path.dirname(__file__))
     updir = os.path.join(basedir, 'static/upload/')
-    files = request.files
 
     index = 0
     results = []
