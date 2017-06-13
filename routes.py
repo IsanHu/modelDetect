@@ -36,6 +36,8 @@ def init_route(app):
     app.add_url_rule('/', 'home', home, methods=['GET'])
     app.add_url_rule('/classify/<path:url>', 'classify', classify, methods=['GET'])
     app.add_url_rule('/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
+    app.add_url_rule('/upload', 'upload', upload, methods=['POST'])
+    app.add_url_rule('/detectupload', 'detectupload', detectupload, methods=['GET'])
 
 def home():
     return render_template('home.html')
@@ -66,6 +68,49 @@ def classify(url):
         result['result'] = 0
         result['errorMsg'] = "预测失败"
         return  jsonify(result)
+
+@app.route('/detectupload', methods=['POST'])
+def detectupload():
+    return render_template('detect_upload.html')
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    images = []
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    updir = os.path.join(basedir, 'static/upload/')
+    files = request.files
+
+    index = 0
+    results = []
+    for f in files:
+        file = files[f]
+        filename = secure_filename(file.filename)
+        filePath = os.path.join(updir, filename)
+        file.save(filePath)
+        print "file path:"
+        print filePath
+
+        try:
+            image_data = read_image2RGBbytesFrom(filePath)
+        except:
+            print "读取图片失败"
+
+        filePath = 'static/upload/'+filename
+        try:
+            predictions = sess.run(softmax_tensor, \
+                         {'DecodeJpeg/contents:0': image_data})
+            top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+            re = {}
+            for node_id in top_k:
+                human_string = label_lines[node_id]
+                score = predictions[0][node_id]
+                re[human_string] = '%.5f' % score
+            re['url'] = filePath
+            results.append(re)
+        except:
+            print "预测失败"
+    return render_template('result.html', results=results)
+
 
 def search(key, page):
     overStart = time.time()
@@ -149,6 +194,25 @@ def read_image2RGBbytes(imgurl):
         return None
 
     return image_data
+
+
+def read_image2RGBbytesFrom(image_path):
+  with BytesIO() as output:
+      try:
+        with Image.open(image_path) as img:
+          frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+          frameCount = len(frames)
+          if frameCount < 5 :
+              temImg = frames[frameCount // 2]
+              temImg.convert('RGB').save(output, 'JPEG')
+          else:
+              temImg = frames[frameCount - 4]
+              temImg.convert('RGB').save(output, 'JPEG')
+          image_data = output.getvalue()
+      except:
+        print ("读取图片失败")
+        return None
+  return image_data
 
 
 def list_routes(app):
