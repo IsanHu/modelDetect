@@ -23,7 +23,7 @@ init_route(app)
 @app.route('/upload', methods=['POST'])
 def upload():
     files = request.files
-    processUpload(files)
+    return processUpload(files)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=argv[1])
