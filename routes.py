@@ -46,6 +46,7 @@ def home():
 def classify(url):
     failReason = ""
     result = {}
+    print url
     try:
         image_data = read_image2RGBbytes(url)
     except:
@@ -64,9 +65,10 @@ def classify(url):
         result['result'] = 1
         result['predict'] = predict
         return  jsonify(result)
-    except:
+    except (Exception) as e:
         result['result'] = 0
         result['errorMsg'] = "预测失败"
+        print e.message
         return  jsonify(result)
 
 
