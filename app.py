@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 from flask import Flask, request, jsonify, render_template
-from routes import init_route, processUpload
+from routes import init_route, processUpload, classifycategory
 # import cv2
 
 import numpy as np
@@ -24,6 +24,13 @@ init_route(app)
 def upload():
     files = request.files
     return processUpload(files)
+
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    url = request.url
+    return classifycategory(url)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=argv[1])

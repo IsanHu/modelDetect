@@ -80,13 +80,38 @@
 
   $('#searchInput').on('keypress', function (e) {
        if(e.which === 13){
-          search()
+          searchtemp()
        }
    });
 
   $("#searchButton").on("click", function(){
       search();
   });
+
+  
+  function searchtemp() {
+        var params = {
+          url: "http://7xl6jm.com2.z0.glb.qiniucdn.com/netpic/20161220000946DVRIDGAMIHBG04FN.gif"
+        };
+        // url = "/search/" + searchKey + "/page/" + page;
+        url = "/classify"
+        console.log(url)
+        $.ajax({
+            type: "POST",
+            data: params,
+            url: url,
+            success: function(data) {
+                $('#result').append(data)
+            },
+            error: function(data) {
+                $("#loading").hide();
+                loading = 0
+                waitingDialog.hide();
+                $('#searchWordBody').html(data.responseText);
+            },
+            dataType: "html"
+        });
+    }
 
   function searchWords(searchKey, page, callback) {
         var params = {
