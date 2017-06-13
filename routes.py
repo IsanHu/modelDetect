@@ -69,11 +69,11 @@ def classify(url):
         result['errorMsg'] = "预测失败"
         return  jsonify(result)
 
-@app.route('/detectupload', methods=['POST'])
+
 def detectupload():
     return render_template('detect_upload.html')
 
-@app.route('/upload', methods=['POST'])
+
 def upload():
     images = []
     basedir = os.path.abspath(os.path.dirname(__file__))
