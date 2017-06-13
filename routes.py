@@ -35,7 +35,7 @@ softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
 def init_route(app):
     app.add_url_rule('/classify/', 'home', home, methods=['GET'])
-    app.add_url_rule('/classify/classify/<path:url>', 'classify', classify, methods=['GET'])
+    app.add_url_rule('/classify/classifycategory/<path:url>', 'classifycategory', classifycategory, methods=['GET'])
     app.add_url_rule('/classify/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
     app.add_url_rule('/classify/detectupload', 'detectupload', detectupload, methods=['GET'])
 
@@ -43,7 +43,7 @@ def home():
     return render_template('home.html')
     pass
 
-def classify(url):
+def classifycategory(url):
     failReason = ""
     result = {}
     print url
@@ -181,6 +181,7 @@ def read_image2RGBbytes(imgurl):
     try:
         with BytesIO() as output:
             response = requests.get(imgurl)
+            print imgurl
             with Image.open(StringIO(response.content)) as img:
                   frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
                   frameCount = len(frames)
