@@ -34,7 +34,7 @@ sess = tf.Session()
 softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
 def init_route(app):
-    app.add_url_rule('/classify/', 'home', home, methods=['GET'])
+    app.add_url_rule('/classify/<path:url>', 'classifycategory', classifycategory, methods=['GET'])
     app.add_url_rule('/classify/classifycategory/<path:url>', 'classifycategory', classifycategory, methods=['GET'])
     app.add_url_rule('/classify/search/<string:key>/page/<string:page>', 'search', search, methods=['GET'])
     app.add_url_rule('/classify/detectupload', 'detectupload', detectupload, methods=['GET'])
