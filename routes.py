@@ -46,8 +46,6 @@ def home():
 def classifycategory(url):
     failReason = ""
     result = {}
-    url.replace("http://", "http:////")
-    url.replace("https://", "https:////")
     print url
     try:
         image_data = read_image2RGBbytes(url)
