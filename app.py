@@ -32,6 +32,12 @@ def classify():
     return classifycategory(request.form['url'])
 
 
+@app.route('/classify/mogutou', methods=['POST'])
+def classifymogutou():
+    url = request.url
+    return classifycategory(request.form['url'])
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=argv[1])
 
