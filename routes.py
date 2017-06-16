@@ -89,7 +89,7 @@ def classifymogutou(url):
             human_string = label_lines[node_id]
             if human_string == "mogutou":
                 score = predictions[0][node_id]    
-                result['mogutou'] round(score, 4)
+                result['mogutou'] = round(score, 4)
         result['result'] = 1
         return  jsonify(result)
     except (Exception) as e:
