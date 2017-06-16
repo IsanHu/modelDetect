@@ -33,9 +33,9 @@ def classify():
 
 
 @app.route('/classify/mogutou', methods=['POST'])
-def classifymogutou():
+def mogutou():
     url = request.url
-    return classifycategory(request.form['url'])
+    return classifymogutou(request.form['url'])
 
 
 if __name__ == "__main__":
