@@ -21,10 +21,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Loads label file, strips off carriage return
 # 加载标签数据
 label_lines = [line.rstrip() for line 
-                   in tf.gfile.GFile(basedir + '/retrained_labels.txt')]
+                   in tf.gfile.GFile(basedir + '/classify_image_labels_06_16.txt')]
 
 # Unpersists graph from file
-with tf.gfile.FastGFile(basedir + '/retrained_graph.pb', 'rb') as f:
+with tf.gfile.FastGFile(basedir + '/classify_image_model_06_16.pb', 'rb') as f:
     print("加载模型")
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(f.read())

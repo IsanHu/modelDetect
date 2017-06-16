@@ -4,6 +4,7 @@
             <table class="table table-condensed">
                 <tr>
                     <td>图片</td>
+                    <td style="width:100px">蘑菇头</td>
                     <td style="width:100px">真人</td>
                     <td style="width:100px">暴漫</td>
                     <td style="width:100px">萌宠</td>
@@ -14,6 +15,7 @@
                 {% for result in results %}
                     <tr>
                         <td><img class="previewImg" style="width: 150px; height: 150px;" src={{result["url"]}}></td>
+                        <td>{{result['mogutou']}}</td>
                         <td>{{result['realman']}}</td>
                         <td>{{result['baoman']}}</td>
                         <td>{{result['pet']}}</td>
