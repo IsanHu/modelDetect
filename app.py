@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 from flask import Flask, request, jsonify, render_template
-from routes import init_route, processUpload, classifycategory
+from routes import init_route, processUpload, classifycategory, classifymogutou
 # import cv2
 
 import numpy as np
