@@ -12,25 +12,33 @@ import requests
 import json
 from StringIO import StringIO
 import tensorflow as tf
-from PIL import Image, ImageSequence
+from PIL import Image, ImageSequence, ImageFile
 from io import BytesIO
 from werkzeug import secure_filename
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+## 设置gpu占用显存比例
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.6 # 占用GPU40%的显存
+print ("占用百分之60的gpu显存")
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Loads label file, strips off carriage return
 # 加载标签数据
 label_lines = [line.rstrip() for line 
-                   in tf.gfile.GFile(basedir + '/classify_image_labels_06_16.txt')]
+                   in tf.gfile.GFile(basedir + '/mogutou_labels_06_16.txt')]
 
 # Unpersists graph from file
-with tf.gfile.FastGFile(basedir + '/classify_image_model_06_16.pb', 'rb') as f:
+with tf.gfile.FastGFile(basedir + '/mogutou_06_16.pb', 'rb') as f:
     print("加载模型")
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(f.read())
     _ = tf.import_graph_def(graph_def, name='')
 
-sess = tf.Session()
+sess = tf.Session(config=config)
 softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
 
 def init_route(app):
